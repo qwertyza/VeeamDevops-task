@@ -18,7 +18,7 @@ Removes all created resources.
 
 **kafka_service.yaml** and **kafka_deploy.yaml** set up Kafka cluster.
 
-# zk_set.yaml
+#zk_set.yaml
 
 A manifest for building 3-node ZK cluster. 
 It has four parts overall:
@@ -30,11 +30,11 @@ It has four parts overall:
 Deployment has optional anti-affinity used, just to spread ZKs around available k8s nodes. This will increase its HA.
 I decided to unite all zk components into a single manifest to avoid cluttering the repo.
 
-# kafka_service.yaml
+#kafka_service.yaml
 
 Deploys kafka-service as a Service to handle kafka broker traffic. Since kafka brokers by default use only port 9092, this file is quite simple.
 
-# kafka_deployment.yaml
+#kafka_deployment.yaml
 
 Builds a 3-node Kafka cluster. For extra availability it uses *readinessProbe* to ensure port 9092 is opened. *livenessProbe* can be also introduced in real setup to ensure traffic flow. Since it is a test, I used a simpler setup.
 
@@ -54,7 +54,7 @@ In order to connect to ZK service, kafka brokers will use internally resolved
 *zk-cluster.default.svc.cluster.local:2181*
 It then does not matter which ZK service dies, traffic flow will be balanced.
 
-# My tests
+#My tests
 
 I deployed it all over AWS EKS. To ensure that cluster was actually working, built-inconsole Kafka tools were used. (Actually it could be encapsulated into livenessProbes)
 
@@ -72,7 +72,7 @@ Generated some messages, and then from any other pod (same path for sh scripts)
 
  received same messages, generated under first pod.
  
- # My Issue and Security considerations
+ #My Issue and Security considerations
  
  I will start with **issues**. There we quite a lot.
  
@@ -103,7 +103,22 @@ Kafka tends to consume all available ram resources because it uses a paging cach
 
 I played with available AWS instances for k8s nodes. Seems like HDD disks are not enough for adequate latency, so SSDs or object-storage as S3 should be used.
 
+Generic test like
+>kafka-producer-perf-test.sh --topic MyTest --record-size 100--num-records 10000000  --throughput -1 --producer.config ../config/producer.properties
 
+on T3.medium, generated around 46000 records per second; ~100 bytes per record. **43MB/s throughput and 98ms** latency.
+
+# Alerting and Monitoring
+
+It all depends on available tools at our disposal. If allowed I would choose easy to use tool like Prometheus. 
+If impossible, we can use default Kafka ability to dump metrics through **JMX**.
+It could be utilized, by specifying **JMX_PORT** env.variable in *kafka_deployment* manifest.
+
+The data can be then handled by another pod, containing something like** jmxtrans** docker image. This would require a standalone data handler in our cluster. jmxtrans can flux the data into AWS CloudFormation for example or any other graph building tool.
+
+We can monitor the following on broker nodes:
+
+ will monitor totally consumed time for a request
 
 
 
