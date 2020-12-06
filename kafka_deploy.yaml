@@ -28,3 +28,8 @@ spec:
           value: "PLAINTEXT://0.0.0.0:9092"
         - name: KAFKA_ZOOKEEPER_CONNECT
           value: zk-cluster.default.svc.cluster.local:2181
+        readinessProbe:
+          tcpSocket:
+            port: 9092
+          initialDelaySeconds: 20
+          periodSeconds: 10   
