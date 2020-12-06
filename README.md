@@ -97,7 +97,7 @@ Now, about **Security**.
 
 5)Data is written into 1 replica by default coz of **min.insync.replicas** parameter. it should be increased in production to allow parallel write of data to all kafka replicas.
 
-#Performance considerations
+# Performance considerations
 
 Kafka tends to consume all available ram resources because it uses a paging cache, thus must be strictly limited in a manifest and probably use anti-affinity to evenly spead across a cluster.
 
