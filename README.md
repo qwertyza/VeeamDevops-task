@@ -108,6 +108,8 @@ Generic test like
 
 on T3.medium, generated around 46000 records per second; ~100 bytes per record. **43MB/s throughput and 98ms** latency.
 
+
+
 # Alerting and Monitoring
 
 It all depends on available tools at our disposal. If allowed I would choose easy to use tool like Prometheus. 
@@ -118,7 +120,21 @@ The data can be then handled by another pod, containing something like** jmxtran
 
 We can monitor the following on broker nodes:
 
- will monitor totally consumed time for a request
+**Page cache read ratio in %**. Kafka actively uses caching, so if brokers can't keep up with reading from cache, this ratio will go below 100. Abnormally low values like 40% will  sign that more brokers must be deployed.
+
+**Disk usage** obvously as kafka should store data on volumes to avoid data loss. This metric must have an alert on it.
+
+**Garbage collection** (hourly or per min); Kafka uses JVM, so inactivity periods in gc will cause problems. This must be alerted.
+
+**Requests per second** as far as I remember can monitor consumer/producer requests number, to get an average idea of data influx.
+
+**Total time** to server a request in ms.
+
+As for producers, it makes sense to monitor **Broker response rate**, just to make sure brokers keep up with ack-ing messages generated.
+
+Consumers may expose **Messages consumed** metric, since bytes consumed will hardly be adequate, as we don't know the expected size of a single message.
+
+There can be some other simpler alerts like "no leader" situation, or ZK outage.
 
 
 
