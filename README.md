@@ -58,7 +58,7 @@ It then does not matter which ZK service dies, traffic flow will be balanced.
 
 I deployed it all over AWS EKS. To ensure that cluster was actually working, built-inconsole Kafka tools were used. (Actually it could be encapsulated into livenessProbes)
 
-Something like (there is actually - - , not --)
+Something like
 
 >kubectl get pods
 >kubectl exec -it kafka-whatever -- bash
